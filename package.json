@@ -10,7 +10,17 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.17.1",
+    "express": "^4.18.1",
     "nodemon": "^2.0.19"
-  }
+  },
+  "description": "### Cómo arrancar el backend",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Adalab/promo-Q-module-4-pair-3-netflix.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Adalab/promo-Q-module-4-pair-3-netflix/issues"
+  },
+  "homepage": "https://github.com/Adalab/promo-Q-module-4-pair-3-netflix#readme"
 }
