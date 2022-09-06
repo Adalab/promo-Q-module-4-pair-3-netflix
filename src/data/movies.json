@@ -1,9 +1,7 @@
-{
-    "success": true,
-    "movies": [
+[
     {
       "id": 1,
-     " title": "Gambita de dama",
+      "title": "Gambita de dama",
       "gender": "Drama",
       "image": "https://via.placeholder.com/150"
     },
@@ -13,4 +11,4 @@
       "gender": "Comedia",
       "image": "https://via.placeholder.com/150"
     }
-  ]}
+  ]
