@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 
 const movies = require("./data/movies.json");
+const users = require("./data/users.json");
 
 const { response } = require("express");
 
@@ -41,12 +42,36 @@ server.get("/movies", (req, resp) => {
       return 0;
     })
   }
-  console.log(sortFilter);
   const filterGender = movies.filter((movie) => movie.gender.includes(gender));
   resp.json({
       "success": true,
       "movies": filterGender
-    });
-  
-  
+    }); 
 });
+
+//endpoint para enviar las peliculas
+server.post("/login", (req, resp) => {
+  console.log(req.body);
+  users.find((user) => {
+    if (user.email === req.body.email && user.password === req.body.password) {
+      resp.json({
+        "success": true,
+        "userId": "id_de_la_usuaria_encontrada"
+      })
+    } resp.json({
+      "success": false,
+      "errorMessage": "Usuaria/o no encontrada/o"
+    })
+  })
+
+});
+
+//servidor estatico
+
+const staticServerPath = ('./src/public-react');
+server.use(express.static(staticServerPath));
+
+//servidor estatico imagenes
+
+const staticServerPathImages = ('./src/public-movies-images');
+server.use(express.static(staticServerPathImages));

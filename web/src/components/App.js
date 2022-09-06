@@ -11,10 +11,11 @@ import SignUp from './SignUp';
 import apiMovies from '../services/api-movies';
 import apiUser from '../services/api-user';
 import router from '../services/router';
+import localStoraged from '../services/local-storage';
 
 const App = () => {
   // state: user
-  const [userId, setUserId] = useState('');
+  const [userId, setUserId] = useState(localStoraged.get('userId',''));
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
@@ -56,6 +57,7 @@ const App = () => {
         setUserEmail(response.email);
         setUserPassword(response.password);
       });
+      localStoraged.set('userId', userId);
     }
   }, [userId]);
 
