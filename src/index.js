@@ -10,6 +10,7 @@ const { response } = require("express");
 const server = express();
 server.use(cors());
 server.use(express.json());
+server.set("view engine", "ejs");
 
 // init express aplication
 const serverPort = 4000;
@@ -19,9 +20,9 @@ server.listen(serverPort, () => {
 
 //endpoint para enviar las peliculas
 server.get("/movies", (req, resp) => {
-  const gender = req.query.gender ? req.query.gender : '';
-  const sortFilter = req.query.sort ? req.query.sort : '';
-  if(sortFilter === 'desc'){
+  const gender = req.query.gender ? req.query.gender : "";
+  const sortFilter = req.query.sort ? req.query.sort : "";
+  if (sortFilter === "desc") {
     movies.sort(function (a, b) {
       if (a.title < b.title) {
         return 1;
@@ -30,8 +31,9 @@ server.get("/movies", (req, resp) => {
         return -1;
       }
       return 0;
-    })
-  } else { movies.sort(function (a, b) {
+    });
+  } else {
+    movies.sort(function (a, b) {
       if (a.title > b.title) {
         return 1;
       }
@@ -39,13 +41,13 @@ server.get("/movies", (req, resp) => {
         return -1;
       }
       return 0;
-    })
+    });
   }
   const filterGender = movies.filter((movie) => movie.gender.includes(gender));
   resp.json({
-      "success": true,
-      "movies": filterGender
-    }); 
+    success: true,
+    movies: filterGender,
+  });
 });
 
 //endpoint para enviar las peliculas
@@ -54,23 +56,37 @@ server.post("/login", (req, resp) => {
   users.find((user) => {
     if (user.email === req.body.email && user.password === req.body.password) {
       resp.json({
-        "success": true,
-        "userId": user.id,
-      })
-    } resp.json({
-      "success": false,
-      "errorMessage": "Usuaria/o no encontrada/o"
-    })
-  })
+        success: true,
+        userId: user.id,
+      });
+    }
+    resp.json({
+      success: false,
+      errorMessage: "Usuaria/o no encontrada/o",
+    });
+  });
+});
 
+//servidor del id de la pelicula a renderizar
+
+server.get("/movie/:movieId", (req, res) => {
+  const foundMovie = movies.find(
+    (oneMovie) => oneMovie.id === req.params.movieId
+  );
+  res.render("movieDetail", foundMovie);
+  //console.log(foundMovie);
 });
 
 //servidor estatico
 
-const staticServerPath = ('./src/public-react');
+const staticServerPath = "./src/public-react";
 server.use(express.static(staticServerPath));
 
 //servidor estatico imagenes
 
-const staticServerPathImages = ('./src/public-movies-images');
+const staticServerPathImages = "./src/public-movies-images";
 server.use(express.static(staticServerPathImages));
+
+// servidor de estaticos de link a estilos
+const staticServerStyle = "./public";
+server.use(express.static(staticServerStyle));
