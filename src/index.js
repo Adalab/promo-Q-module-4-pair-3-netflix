@@ -21,22 +21,21 @@ server.listen(serverPort, () => {
 server.get("/movies", (req, resp) => {
   const gender = req.query.gender ? req.query.gender : '';
   const sortFilter = req.query.sort ? req.query.sort : '';
-  if(sortFilter === 'asc'){
+  if(sortFilter === 'desc'){
     movies.sort(function (a, b) {
-      if (a.title > b.title) {
+      if (a.title < b.title) {
         return 1;
       }
-      if (a.title < b.title) {
+      if (a.title > b.title) {
         return -1;
       }
       return 0;
     })
-  } else if (sortFilter === 'desc') {
-    movies.sort(function (a, b) {
-      if (a.title < b.title) {
+  } else { movies.sort(function (a, b) {
+      if (a.title > b.title) {
         return 1;
       }
-      if (a.title > b.title) {
+      if (a.title < b.title) {
         return -1;
       }
       return 0;
@@ -56,7 +55,7 @@ server.post("/login", (req, resp) => {
     if (user.email === req.body.email && user.password === req.body.password) {
       resp.json({
         "success": true,
-        "userId": "id_de_la_usuaria_encontrada"
+        "userId": user.id,
       })
     } resp.json({
       "success": false,
