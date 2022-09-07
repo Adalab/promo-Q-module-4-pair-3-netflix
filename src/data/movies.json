@@ -1,6 +1,6 @@
 [
     {
-      "id": 1,
+      "id": "1",
       "title": "Gambita de dama",
       "gender": "Drama",
       "image": "//localhost:4000/gambita-de-dama.jpeg"
