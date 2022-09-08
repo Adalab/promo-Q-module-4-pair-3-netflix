@@ -1,9 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 
-const movies = require("./data/movies.json");
-const users = require("./data/users.json");
-
+//const movies = require("./data/movies.json");
+//const users = require("./data/users.json");
+const Database = require("better-sqlite3")
+const db = new Database('./src/db/database.db', { verbose: console.log });
 const { response } = require("express");
 
 // create and config server
@@ -21,60 +22,70 @@ server.listen(serverPort, () => {
 //endpoint para enviar las peliculas
 server.get("/movies", (req, resp) => {
   const gender = req.query.gender ? req.query.gender : "";
-  const sortFilter = req.query.sort ? req.query.sort : "";
-  if (sortFilter === "desc") {
-    movies.sort(function (a, b) {
-      if (a.title < b.title) {
-        return 1;
-      }
-      if (a.title > b.title) {
-        return -1;
-      }
-      return 0;
+  const sortFilter = req.query.sort.toUpperCase();
+  
+  if (gender != ''){
+    const query = db.prepare(`
+      SELECT *
+        FROM movies
+          WHERE gender = ?
+          ORDER BY title ${sortFilter}`);
+    const movies = query.all(gender);
+    console.log(movies);
+    resp.json({
+      success: true,
+      movies: movies,
     });
   } else {
-    movies.sort(function (a, b) {
-      if (a.title > b.title) {
-        return 1;
-      }
-      if (a.title < b.title) {
-        return -1;
-      }
-      return 0;
+    const query = db.prepare(`
+      SELECT *
+        FROM movies
+          ORDER BY title ${sortFilter}`);
+    const movies = query.all();
+    console.log(movies);
+    resp.json({
+      success: true,
+      movies: movies,
     });
   }
-  const filterGender = movies.filter((movie) => movie.gender.includes(gender));
-  resp.json({
-    success: true,
-    movies: filterGender,
-  });
 });
 
 //endpoint para enviar las peliculas
 server.post("/login", (req, resp) => {
-  console.log(req.body);
-  users.find((user) => {
-    if (user.email === req.body.email && user.password === req.body.password) {
-      resp.json({
-        success: true,
-        userId: user.id,
-      });
-    }
+  const email = req.body.email;
+  const password = req.body.password;
+  const query = db.prepare(`
+      SELECT *
+        FROM users
+          WHERE email = ? AND password = ?`);
+  const user = query.get(email, password);
+  
+  if(user != undefined) {
+    console.log(user.id);
+    resp.json({
+      success: true,
+      userId: user.id, 
+    });
+  } else {
     resp.json({
       success: false,
       errorMessage: "Usuaria/o no encontrada/o",
     });
-  });
+  }
 });
 
 //servidor del id de la pelicula a renderizar
 
 server.get("/movie/:movieId", (req, res) => {
-  const foundMovie = movies.find(
-    (oneMovie) => oneMovie.id === req.params.movieId
-  );
-  res.render("movieDetail", foundMovie);
+  const id = req.params.movieId;
   //console.log(foundMovie);
+
+  const query = db.prepare(`
+  SELECT *
+    FROM movies
+      WHERE id = ?`);
+  const movie = query.get(id);
+  res.render("movieDetail", movie);
 });
 
 //servidor estatico
