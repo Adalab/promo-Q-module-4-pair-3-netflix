@@ -3,8 +3,8 @@ const cors = require("cors");
 
 //const movies = require("./data/movies.json");
 //const users = require("./data/users.json");
-const Database = require("better-sqlite3")
-const db = new Database('./src/db/database.db', { verbose: console.log });
+const Database = require("better-sqlite3");
+const db = new Database("./src/db/database.db", { verbose: console.log });
 const { response } = require("express");
 
 // create and config server
@@ -23,8 +23,8 @@ server.listen(serverPort, () => {
 server.get("/movies", (req, resp) => {
   const gender = req.query.gender ? req.query.gender : "";
   const sortFilter = req.query.sort.toUpperCase();
-  
-  if (gender != ''){
+
+  if (gender != "") {
     const query = db.prepare(`
       SELECT *
         FROM movies
@@ -59,17 +59,41 @@ server.post("/login", (req, resp) => {
         FROM users
           WHERE email = ? AND password = ?`);
   const user = query.get(email, password);
-  
-  if(user != undefined) {
+
+  if (user != undefined) {
     console.log(user.id);
     resp.json({
       success: true,
-      userId: user.id, 
+      userId: user.id,
     });
   } else {
     resp.json({
       success: false,
       errorMessage: "Usuaria/o no encontrada/o",
+    });
+  }
+});
+//endpoint de sign-up
+server.post("/sign-up", (req, resp) => {
+  //console.log(body.params);
+  console.log("IVANICO");
+  const querySearch = db.prepare(`
+  SELECT * from users WHERE email= ?`);
+
+  const userFound = querySearch.get(req.body.email);
+  console.log(userFound);
+  if (userFound != undefined) {
+    resp.json({
+      success: false,
+      errorMessage: "Usuario ya existente",
+    });
+  } else {
+    const query = db.prepare(`INSERT INTO users (email, password) VALUES(?,?)`);
+    const newUser = query.run(req.body.email, req.body.password);
+    console.log(newUser);
+    resp.json({
+      success: true,
+      userId: newUser.id,
     });
   }
 });
