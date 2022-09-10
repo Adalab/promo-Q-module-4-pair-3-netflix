@@ -76,7 +76,6 @@ server.post("/login", (req, resp) => {
 //endpoint de sign-up
 server.post("/sign-up", (req, resp) => {
   //console.log(body.params);
-  console.log("IVANICO");
   const querySearch = db.prepare(`
   SELECT * from users WHERE email= ?`);
 
@@ -111,6 +110,7 @@ server.get("/movie/:movieId", (req, res) => {
   const movie = query.get(id);
   res.render("movieDetail", movie);
 });
+//endpoint de actualizacion de datos de la usuaria
 
 //servidor estatico
 
