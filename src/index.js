@@ -3,23 +3,25 @@ const cors = require("cors");
 
 //const movies = require("./data/movies.json");
 //const users = require("./data/users.json");
+
+//configura base de datos
 const Database = require("better-sqlite3");
 const db = new Database("./src/db/database.db", { verbose: console.log });
-const { response } = require("express");
 
 // create and config server
 const server = express();
 server.use(cors());
 server.use(express.json());
+
 server.set("view engine", "ejs");
 
-// init express aplication
+// arrancar servidor
 const serverPort = 4000;
 server.listen(serverPort, () => {
   console.log(`Server listening at http://localhost:${serverPort}`);
 });
 
-//endpoint para enviar las peliculas
+//endpoint para enviar las peliculas, filtrado por genero y orden
 server.get("/movies", (req, resp) => {
   const gender = req.query.gender ? req.query.gender : "";
   const sortFilter = req.query.sort.toUpperCase();
@@ -50,7 +52,7 @@ server.get("/movies", (req, resp) => {
   }
 });
 
-//endpoint para enviar las peliculas
+//endpoint para enviar el login
 server.post("/login", (req, resp) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -73,7 +75,7 @@ server.post("/login", (req, resp) => {
     });
   }
 });
-//endpoint de sign-up
+//endpoint de sign-up, Registro de nuevas usuarias.Comprueba que no haya una usuaria registrada con el mismo email
 server.post("/sign-up", (req, resp) => {
   //console.log(body.params);
   const querySearch = db.prepare(`
@@ -110,8 +112,35 @@ server.get("/movie/:movieId", (req, res) => {
   const movie = query.get(id);
   res.render("movieDetail", movie);
 });
-//endpoint de actualizacion de datos de la usuaria
+//endpoint de actualizacion de datos del login de la usuaria
+server.post("/user/profile", (req, res) => {
+  console.log("holaaaaa");
+  const profile = req.header("userId");
+  const data = req.body;
+  const queryUpdate = db.prepare(
+    `UPDATE users SET name=?,email=?, password=? WHERE id = ? `
+  );
+  const update = queryUpdate.run(data.name, data.email, data.password, profile);
 
+  res.json({
+    success: true,
+    userUpdate: update,
+  });
+});
+// Endpoint para recuperar los datos del perfil de la usuaria
+server.get("/user/profile", (req, res) => {
+  const userProfile = req.header("userId");
+
+  const query = db.prepare(
+    `SELECT name, email, password FROM users WHERE id=?`
+  );
+
+  const getUser = query.get(userProfile);
+  res.json({
+    success: true,
+    user: getUser,
+  });
+});
 //servidor estatico
 
 const staticServerPath = "./src/public-react";
