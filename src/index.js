@@ -114,9 +114,9 @@ server.get("/movie/:movieId", (req, res) => {
 });
 //endpoint de actualizacion de datos del login de la usuaria
 server.post("/user/profile", (req, res) => {
-  console.log("holaaaaa");
   const profile = req.header("userId");
   const data = req.body;
+
   const queryUpdate = db.prepare(
     `UPDATE users SET name=?,email=?, password=? WHERE id = ? `
   );

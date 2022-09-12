@@ -42,7 +42,6 @@ const sendSingUpToApi = (data) => {
 
 const sendProfileToApi = (userId, data) => {
   console.log("Se están enviando datos al profile:", userId, data);
-  console.log(data);
 
   return fetch("http://localhost:4000/user/profile", {
     method: "POST",
@@ -51,7 +50,11 @@ const sendProfileToApi = (userId, data) => {
       "Content-Type": "application/json",
       userId: userId,
     },
-  });
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      return data;
+    });
 };
 
 const getProfileFromApi = (userId) => {
@@ -60,7 +63,7 @@ const getProfileFromApi = (userId) => {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "user-id": userId,
+      userId: userId,
     },
   })
     .then((response) => response.json())
