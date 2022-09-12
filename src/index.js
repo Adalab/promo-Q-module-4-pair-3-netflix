@@ -137,9 +137,7 @@ server.post("/user/profile", (req, res) => {
 server.get("/user/profile", (req, res) => {
   const userProfile = req.header("user-id");
 
-  const query = db.prepare(
-    `SELECT name, email, password FROM users WHERE id=?`
-  );
+  const query = db.prepare(`SELECT * FROM users WHERE id=?`);
 
   const getUser = query.get(userProfile);
   res.json({
