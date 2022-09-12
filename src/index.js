@@ -114,26 +114,31 @@ server.get("/movie/:movieId", (req, res) => {
 });
 //endpoint de actualizacion de datos del login de la usuaria
 server.post("/user/profile", (req, res) => {
-  const profile = req.header("userId");
-  const data = req.body;
+  const profile = req.headers("userId");
+  const data = req.body.data;
 
   const queryUpdate = db.prepare(
     `UPDATE users SET name=?,email=?, password=? WHERE id = ? `
   );
   const update = queryUpdate.run(data.name, data.email, data.password, profile);
-
-  res.json({
-    success: true,
-    userUpdate: update,
-  });
+  if (update.changes === 1) {
+    res.json({
+      success: true,
+      msj: "Los datos se han cambiado correctamente.",
+    });
+  } else {
+    res.json({
+      success: false,
+      msj: "Ha habido algún error.",
+    });
+  }
 });
+
 // Endpoint para recuperar los datos del perfil de la usuaria
 server.get("/user/profile", (req, res) => {
-  const userProfile = req.header("userId");
+  const userProfile = req.headers("userId");
 
-  const query = db.prepare(
-    `SELECT name, email, password FROM users WHERE id=?`
-  );
+  const query = db.prepare(`SELECT * FROM users WHERE id=?`);
 
   const getUser = query.get(userProfile);
   res.json({
