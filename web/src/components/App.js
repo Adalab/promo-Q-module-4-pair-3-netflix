@@ -53,6 +53,7 @@ const App = () => {
   useEffect(() => {
     if (userId !== "") {
       apiUser.getProfileFromApi(userId).then((response) => {
+        console.log(response.name);
         setUserName(response.name);
         setUserEmail(response.email);
         setUserPassword(response.password);
@@ -139,6 +140,7 @@ const App = () => {
   Recargamos la página para que se borren todos los datos del estado de React.
   */
   const logout = () => {
+    localStoraged.set("userId", "");
     router.redirect("/");
     router.reload();
   };
